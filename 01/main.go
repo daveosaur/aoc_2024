@@ -60,18 +60,7 @@ func part2(inp string) int {
 }
 
 func main() {
-	testinput := `3   4
-4   3
-2   5
-1   3
-3   9
-3   3
-`
-	_ = testinput
-	// fmt.Println(part1(testinput))
-	// fmt.Println(part2(testinput))
 	inp, _ := os.ReadFile("input.txt")
-	_ = inp
 	fmt.Println(part1(string(inp)))
 	fmt.Println(part2(string(inp)))
 }

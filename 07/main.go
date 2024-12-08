@@ -51,6 +51,9 @@ func isValid(target int, acc int, inp []int) bool {
 }
 
 func isValidP2(target int, acc int, inp []int) bool {
+	if acc > target {
+		return false
+	}
 	if len(inp) == 0 {
 		return acc == target
 	}
@@ -58,9 +61,7 @@ func isValidP2(target int, acc int, inp []int) bool {
 		if acc+inp[0] == target || acc*inp[0] == target {
 			return true
 		}
-		acc_s := strconv.Itoa(acc)
-		inp_first_s := strconv.Itoa(inp[0])
-		merged, _ := strconv.Atoi(acc_s + inp_first_s)
+		merged := concatNums(acc, inp[0])
 		return merged == target
 
 	}
@@ -72,9 +73,7 @@ func isValidP2(target int, acc int, inp []int) bool {
 			if isValidP2(target, inp[0], inp[1:]) {
 				return true
 			}
-			inp_first_s := strconv.Itoa(inp[0])
-			inp_sec_s := strconv.Itoa(inp[1])
-			merged, _ := strconv.Atoi(inp_first_s + inp_sec_s)
+			merged := concatNums(inp[0], inp[1])
 			if isValidP2(target, merged, inp[2:]) {
 				return true
 			}
@@ -82,15 +81,23 @@ func isValidP2(target int, acc int, inp []int) bool {
 			if isValidP2(target, acc*inp[0], inp[1:]) {
 				return true
 			}
-			acc_s := strconv.Itoa(acc)
-			inp_first_s := strconv.Itoa(inp[0])
-			merged, _ := strconv.Atoi(acc_s + inp_first_s)
+			merged := concatNums(acc, inp[0])
 			if isValidP2(target, merged, inp[1:]) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+// joining strings is dum
+func concatNums(a, b int) int {
+	temp := float32(b)
+	for temp >= 1 {
+		temp /= 10
+		a *= 10
+	}
+	return a + b
 }
 
 func part2(inp string) int {
