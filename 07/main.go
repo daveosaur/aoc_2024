@@ -16,41 +16,28 @@ func part1(inp string) int {
 		parsed := strings.Split(line, ": ")
 		target, _ := strconv.Atoi(parsed[0])
 		nums_s := strings.Split(parsed[1], " ")
-		//gather up the numbers
+
 		nums := make([]int, 0)
 		for _, num := range nums_s {
 			n, _ := strconv.Atoi(num)
 			nums = append(nums, n)
 		}
-		if isValid(target, 0, nums) {
+		if isValid(target, nums[0], nums[1:]) {
 			result += target
 		}
-		// fmt.Println(result, ": ", line)
 	}
 	return result
 }
 
 func isValid(target int, acc int, inp []int) bool {
 	if len(inp) == 1 {
-		if acc+inp[0] == target || acc*inp[0] == target {
-			return true
-		}
+		return acc+inp[0] == target || acc*inp[0] == target
 	}
-	if len(inp) > 1 {
-		if isValid(target, acc+inp[0], inp[1:]) {
-			return true
-		}
-		if acc == 0 {
-			return isValid(target, inp[0], inp[1:])
-		} else {
-			return isValid(target, acc*inp[0], inp[1:])
-
-		}
-	}
-	return false
+	return isValid(target, acc+inp[0], inp[1:]) || isValid(target, acc*inp[0], inp[1:])
 }
 
 func isValidP2(target int, acc int, inp []int) bool {
+	//small optimization
 	if acc > target {
 		return false
 	}
@@ -58,36 +45,9 @@ func isValidP2(target int, acc int, inp []int) bool {
 		return acc == target
 	}
 	if len(inp) == 1 {
-		if acc+inp[0] == target || acc*inp[0] == target {
-			return true
-		}
-		merged := concatNums(acc, inp[0])
-		return merged == target
-
+		return acc+inp[0] == target || acc*inp[0] == target || concatNums(acc, inp[0]) == target
 	}
-	if len(inp) > 1 {
-		if isValidP2(target, acc+inp[0], inp[1:]) {
-			return true
-		}
-		if acc == 0 {
-			if isValidP2(target, inp[0], inp[1:]) {
-				return true
-			}
-			merged := concatNums(inp[0], inp[1])
-			if isValidP2(target, merged, inp[2:]) {
-				return true
-			}
-		} else {
-			if isValidP2(target, acc*inp[0], inp[1:]) {
-				return true
-			}
-			merged := concatNums(acc, inp[0])
-			if isValidP2(target, merged, inp[1:]) {
-				return true
-			}
-		}
-	}
-	return false
+	return isValidP2(target, acc+inp[0], inp[1:]) || isValidP2(target, acc*inp[0], inp[1:]) || isValidP2(target, concatNums(acc, inp[0]), inp[1:])
 }
 
 // joining strings is dum
@@ -115,12 +75,8 @@ func part2(inp string) int {
 			n, _ := strconv.Atoi(num)
 			nums = append(nums, n)
 		}
-		if isValidP2(target, 0, nums) {
+		if isValidP2(target, nums[0], nums[1:]) {
 			result += target
-			// fmt.Println(result, ": ", line, " success!")
-		} else {
-			// fmt.Println(result, ": ", line)
-
 		}
 	}
 	return result
