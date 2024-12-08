@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func part1(inp string) int {
@@ -61,6 +62,7 @@ func part2(inp string) int {
 
 func main() {
 	inp, _ := os.ReadFile("input.txt")
-	fmt.Println(part1(string(inp)))
-	fmt.Println(part2(string(inp)))
+	start := time.Now()
+	fmt.Printf("%d\n", part1(string(inp)))
+	fmt.Printf("%d\ntotal time: %s\n", part2(string(inp)), time.Since(start).String())
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func part1(inp string) int {
@@ -15,10 +16,8 @@ func part1(inp string) int {
 		}
 		parsed := strings.Split(line, ": ")
 		target, _ := strconv.Atoi(parsed[0])
-		nums_s := strings.Split(parsed[1], " ")
-
 		nums := make([]int, 0)
-		for _, num := range nums_s {
+		for _, num := range strings.Split(parsed[1], " ") {
 			n, _ := strconv.Atoi(num)
 			nums = append(nums, n)
 		}
@@ -30,6 +29,9 @@ func part1(inp string) int {
 }
 
 func isValid(target int, acc int, inp []int) bool {
+	if acc > target {
+		return false
+	}
 	if len(inp) == 1 {
 		return acc+inp[0] == target || acc*inp[0] == target
 	}
@@ -40,9 +42,6 @@ func isValidP2(target int, acc int, inp []int) bool {
 	//small optimization
 	if acc > target {
 		return false
-	}
-	if len(inp) == 0 {
-		return acc == target
 	}
 	if len(inp) == 1 {
 		return acc+inp[0] == target || acc*inp[0] == target || concatNums(acc, inp[0]) == target
@@ -68,10 +67,8 @@ func part2(inp string) int {
 		}
 		parsed := strings.Split(line, ": ")
 		target, _ := strconv.Atoi(parsed[0])
-		nums_s := strings.Split(parsed[1], " ")
-		//gather up the numbers
-		nums := make([]int, 0)
-		for _, num := range nums_s {
+		nums := make([]int, 0, 10)
+		for _, num := range strings.Split(parsed[1], " ") {
 			n, _ := strconv.Atoi(num)
 			nums = append(nums, n)
 		}
@@ -84,6 +81,7 @@ func part2(inp string) int {
 
 func main() {
 	inp, _ := os.ReadFile("input.txt")
-	fmt.Println(part1(string(inp)))
-	fmt.Println(part2(string(inp)))
+	start := time.Now()
+	fmt.Printf("%d\n", part1(string(inp)))
+	fmt.Printf("%d\ntotal time: %s\n", part2(string(inp)), time.Since(start).String())
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 func part1(inp string) int {
@@ -33,16 +34,8 @@ func part2(inp string) int {
 }
 
 func main() {
-	testinput := "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
-	_ = testinput
-	testinput2 := "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
-	_ = testinput2
-
-	// fmt.Println(part1(testinput))
 	inp, _ := os.ReadFile("input.txt")
-	_ = inp
-	fmt.Println(part1(string(inp)))
-	// fmt.Println(part2(testinput2))
-	fmt.Println(part2(string(inp)))
-
+	start := time.Now()
+	fmt.Printf("%d\n", part1(string(inp)))
+	fmt.Printf("%d\ntotal time: %s\n", part2(string(inp)), time.Since(start).String())
 }
