@@ -17,7 +17,9 @@ func part2(inp string) int {
 
 func main() {
 	inp, _ := os.ReadFile("input.txt")
-	start := time.Now()
-	fmt.Printf("%d\n", part1(string(inp)))
-	fmt.Printf("%d\ntotal time: %s\n", part2(string(inp)), time.Since(start).String())
+	start_total := time.Now()
+	fmt.Printf("part 1: %d - %s\n", part1(string(inp)), time.Since(start_total))
+	start_p2 := time.Now()
+	fmt.Printf("part 2: %d - %s\n", part2(string(inp)), time.Since(start_p2).String())
+	fmt.Printf("total time: %s\n", time.Since(start_total))
 }

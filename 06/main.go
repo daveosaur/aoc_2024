@@ -468,5 +468,5 @@ func main() {
 	inp, _ := os.ReadFile("input.txt")
 	start := time.Now()
 	fmt.Printf("%d\n", part1(string(inp)))
-	fmt.Printf("%d\ntotal time: %s\n", part2(string(inp)), time.Since(start).String())
+	fmt.Printf("%d\ntotal time: %s\n", part2BruteForcePar(string(inp)), time.Since(start).String())
 }
