@@ -4,21 +4,30 @@ import (
 	"testing"
 )
 
-var testinput string = `125 17`
+var testinput string = `RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE
+`
 
 func TestP1(t *testing.T) {
 
 	result := part1(testinput)
-	target := 55312
+	target := 1930
 	if result != target {
 		t.Errorf("failed. got %d, should be %d\n", result, target)
 	}
 }
-
 func TestP2(t *testing.T) {
 
-	result := solveMemo(25, testinput)
-	target := 55312
+	result := part2(testinput)
+	target := 1206
 	if result != target {
 		t.Errorf("failed. got %d, should be %d\n", result, target)
 	}

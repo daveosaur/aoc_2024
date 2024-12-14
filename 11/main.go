@@ -6,14 +6,13 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
-// stuff for when i was trying to actually brute force lol
-var mut sync.Mutex
-var p2count int
+// global map for memoization
+var parseMap = map[[2]int]int{}
 
+// kept because its funny
 func part1(inp string) int {
 	stones := make([]int, 0, 100)
 	for _, s := range strings.Split(inp, " ") {
@@ -21,12 +20,12 @@ func part1(inp string) int {
 		stones = append(stones, num)
 	}
 	for range 25 {
-		stones = parseStones(stones)
+		stones = parseStonesP1(stones)
 	}
 	return len(stones)
 }
 
-func parseStones(inp []int) []int {
+func parseStonesP1(inp []int) []int {
 	for i := 0; ; i++ {
 		if i >= len(inp) {
 			break
@@ -49,32 +48,6 @@ func parseStones(inp []int) []int {
 	return inp
 }
 
-func parseStonesP2(depth int, inp int) {
-	if depth == 75 {
-		mut.Lock()
-		p2count++
-		mut.Unlock()
-		return
-	}
-	if inp == 0 {
-		inp++
-		parseStonesP2(depth+1, inp)
-		return
-	} else {
-		left, right, length := getDigitsLength(inp)
-		// stone_str := strconv.Itoa(inp.val)
-		// s_len := len(stone_str)
-		if length%2 == 0 {
-			parseStonesP2(depth+1, left)
-			parseStonesP2(depth+1, right)
-			return
-		}
-		//else, mult
-		parseStonesP2(depth+1, inp*2024)
-		return
-	}
-}
-
 func getDigitsLength(inp int) (int, int, int) {
 	temp := inp
 	length := 0
@@ -93,70 +66,52 @@ func getDigitsLength(inp int) (int, int, int) {
 	return left, right, length
 }
 
-// bad bad bad no good
-func part2(inp string) int {
-	stones := make([]int, 0, 100)
-	for _, s := range strings.Split(inp, " ") {
-		num, _ := strconv.Atoi(s)
-		stones = append(stones, num)
-	}
-	var wg sync.WaitGroup
-	for _, s := range stones {
-		wg.Add(1)
-		go func() {
-			parseStonesP2(0, s)
-			wg.Done()
-		}()
-	}
-	wg.Wait()
-	fmt.Println(p2count)
-	return p2count
-}
-
-// global map for memoization
-var parseMap = map[[2]int]int{}
-
-func recurseParseStones(inp int, depth int) int {
-	if depth == 75 {
-		temp := parseSingleStone(inp)
-		return len(temp)
-	}
-	result, ok := parseMap[[2]int{inp, depth}]
-	if !ok {
-		stones := parseSingleStone(inp)
-		for _, s := range stones {
-			parseMap[[2]int{s, depth + 1}] = recurseParseStones(s, depth+1)
-			result += parseMap[[2]int{s, depth + 1}]
-		}
-	}
-	return result
-}
-
-func parseSingleStone(inp int) []int {
-	result := []int{}
+// now returns left, right, count instead of a slice
+func parseSingleStone(inp int) (int, int, int) {
 	if inp == 0 {
-		result = append(result, 1)
+		return 1, 0, 1
 	} else {
 		left, right, s_len := getDigitsLength(inp)
 		if s_len%2 == 0 {
-			result = append(result, left, right)
+			return left, right, 2
 		} else {
-			result = append(result, inp*2024)
+			return inp * 2024, 0, 1
+		}
+	}
+	// return result
+}
+
+func parseStones(target int, inp int, depth int) int {
+	if depth == target {
+		_, _, length := parseSingleStone(inp)
+		return length
+	}
+	result, ok := parseMap[[2]int{inp, depth}]
+	if !ok {
+		left, right, length := parseSingleStone(inp)
+		switch length {
+		case 2:
+			parseMap[[2]int{right, depth + 1}] = parseStones(target, right, depth+1)
+			result += parseMap[[2]int{right, depth + 1}]
+			fallthrough
+		case 1:
+			parseMap[[2]int{left, depth + 1}] = parseStones(target, left, depth+1)
+			result += parseMap[[2]int{left, depth + 1}]
+		default:
+			//something fucked up
+			panic("wat")
 		}
 	}
 	return result
 }
 
 // the actual solution
-func part2Memo(inp string) int {
+func solveMemo(target int, inp string) int {
+	clear(parseMap)
 	result := 0
-	stones := make([]int, 0)
 	for _, s := range strings.Split(inp, " ") {
 		num, _ := strconv.Atoi(s)
-		stones = append(stones, num)
-	}
-	for _, s := range stones {
-		result += recurseParseStones(s, 1)
+		result += parseStones(target, num, 1)
 	}
 	return result
 }
@@ -164,8 +119,8 @@ func part2Memo(inp string) int {
 func main() {
 	inp, _ := os.ReadFile("input.txt")
 	start_total := time.Now()
-	fmt.Printf("part 1: %d - %s\n", part1(string(inp)), time.Since(start_total))
+	fmt.Printf("part 1: %d - %s\n", solveMemo(25, string(inp)), time.Since(start_total))
 	start_p2 := time.Now()
-	fmt.Printf("part 2: %d - %s\n", part2Memo(string(inp)), time.Since(start_p2).String())
+	fmt.Printf("part 2: %d - %s\n", solveMemo(75, string(inp)), time.Since(start_p2).String())
 	fmt.Printf("total time: %s\n", time.Since(start_total))
 }
